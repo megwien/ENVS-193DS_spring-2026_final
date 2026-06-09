@@ -3,6 +3,7 @@ title: "final"
 format: pdf
 ---
 
+## Set Up
 
 ```{r}
 #| label: packages
@@ -38,11 +39,55 @@ This is a continuous quantitative variable that would be measured in meters. It 
 This could effect the American Avocet habitat use because the depth of the water could determine what prey live in the habitat and the resources available to the birds.
 
 
+## Problem 2
+
+### a. 
+
+```{r}
+#| label: problem-2a
+# creating new object
+nests_clean <- nests |> 
+  # filtering to only include AB, RRB, and BBR
+  filter(ant_species %in% c("AB", "RRB", "BBR")) |> 
+  # Only using the 3 species
+  mutate(
+    ant_species = factor(
+      ant_species,
+      levels = c("AB",
+                 "RRB",
+                 "BBR")
+    ),
+    # creating new column of scientific names
+    scientific_name = case_when(
+      # adding in the scientific names for the species
+      ant_species == "AB" ~ "C. sjostedti",
+      ant_species == "RRB" ~ "C. mimosae",
+      ant_species == "BBR" ~ "C. nigriceps"
+    )) |> 
+  # selecting columns of interest
+  select(case_control, height_cm,
+         scientific_name)
+# showing structure of dataframe
+str(nests_clean)
+# displaying 10 rows
+slice_sample(nests_clean, n = 10)
+```
 
 
+### b.
 
+The 1s show when a tree had a nest in it and the 0 shows where there was an available tree with no nest.
 
+### c.
 
+Tree height is a continuous quantitative variable measured in cm. It could affect the probability of nest occurrence because as the tree height increases so does the probability of there being a nest also increases because it becomes more and more removed from predators. I found this in the papers introduction.
+
+Ant species is a categorical variable of either C. sjostedi, C. mimosae, or C. nigriceps. The species of ants might effect the probability of a nest because they might have different ways of defending themselves from the birds that drives away the birds from making a nest. I found this in the end of the introduction.
+
+### d.
+### e.
+### f.
+### g.
 
 
 

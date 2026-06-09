@@ -1,0 +1,22 @@
+time of day (hr:min),commute length (min),day of the week,weather,construction (y/n),date
+758,26,monday,sunny,y,04/06
+805,21,wednesday,sunny,y,04/08
+1403,17,friday,overcast,y,04/10
+809,23,monday,overcast,n,04/13
+742,24,wednesday,sunny,y,04/15
+1407,19,friday,sunny,y,04/17
+801,27,monday,sunny,y,04/20
+803,25,wednesday,sunny,y,04/22
+1405,21,friday,sunny,n,04/24
+802,20,monday,overcast,y,04/27
+807,24,wednesday,overcast,y,04/29
+1401,16,friday,sunny,n,05/01
+755,25,monday,overcast,n,05/04
+758,22,wednesday,sunny,n,05/06
+1407,19,friday,overcast,y,05/08
+801,21,monday,overcast,n,05/11
+802,23,wednesday,sunny,n,05/13
+1356,20,friday,sunny,y,05/15
+805,19,monday,overcast,n,05/18
+809,25,wednesday,overcast,y,05/20
+1400,18,friday,sunny,y,05/22

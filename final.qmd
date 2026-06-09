@@ -1,5 +1,7 @@
 ---
-title: "final"
+title: "Final"
+author: "Megan Wien"
+date: "06/08/2026"
 format: pdf
 ---
 
@@ -7,8 +9,11 @@ format: pdf
 
 ```{r}
 #| label: packages
+#| message: false
+# reading in packages
 library(tidyverse)
 library(DHARMa)
+library(ggeffects)
 ```
 
 ```{r}
@@ -82,7 +87,7 @@ Ant species is a categorical variable of either C. sjostedi, C. mimosae, or C. n
 ### d.
 
 | model number | description | predictors | interaction term? |
-|----|----|----|----|
+|------------------|------------------|------------------|------------------|
 | 1 | case_control \~ height_cm + ant_species | tree height and ant species | no |
 | 2 | case_control \~ height_cm \* ant_species | tree height and ant species and the interaction | yes |
 
@@ -110,22 +115,192 @@ model2 <- glm(
 
 ### f.
 
-The better model is the interaction model with height times ant species  because it had a lower AIC.
+The better model is the interaction model with height times ant species because it had a lower AIC.
 
 ### g.
 
 ```{r}
 # simulate residuals from model2
 model2_res <- simulateResiduals(fittedModel = model2)
+```
 
+```{r}
+#| label: plot
 # plotting the residuals
 plot(model2_res)
+```
 
+```{r}
+#| label: uniformity
 # running diagnostic for uniformity
 testUniformity(model2_res)
+```
+
+```{r}
+#| label: dispersion
 # running diagnostic for dispersing
 testDispersion(model2_res)
+```
+
+```{r}
+#| label: outliers
 # running diagnostic for outliers
 testOutliers(model2_res)
 ```
 
+### h.
+
+```{r}
+#| label: problem-2h
+# creating predictions object from model 2
+predictions <- ggpredict(
+  model2,
+  terms = c("height_cm", "scientific_name")
+)
+# base layer: ggplot
+ggplot() +
+    # first layer: jitter
+  geom_jitter(
+    data = nests_clean,
+    aes(
+      x = height_cm,
+      y = case_control
+    ),
+    # setting customizations
+    width = 0,
+    height = 0,
+    color = "purple",
+    alpha = 0.4
+  ) +
+   # second layer: ribbon
+  geom_ribbon(
+    data = predictions,
+    aes(
+      x = x,
+      ymin = conf.low, # setting CI
+      ymax = conf.high
+    ),
+    fill = "blue",
+    alpha = 0.3
+  ) +
+    # third layer: line
+  geom_line(
+    data = predictions,
+    aes(
+      x = x,
+      y = predicted
+    ),
+    color = "red",
+    linewidth = 1.2
+  ) +
+  # seperating by ant species
+  facet_wrap(~group) +
+  # labeling x and y axis
+  labs(
+    x = "Tree height(cm)",
+    y = "Probability of nest occurrence"
+  ) +
+  # retheming
+  theme_classic() +
+    # removing legend
+  theme(
+    legend.position = "none"
+  )
+```
+
+### i.
+
+Predicted probabilty of a bird nest being in a tree depending on the height and species of acacia ant. Purple points represent the data points of whether or not there was a nest in the tree. Red line shows the predeicted probability at each tree height. The blue ribbon shows the 95% confidence interval. The first panel shows data for the C. mimosae species, the middle for the C. sjostedti species, and the third one for C. nigriceps. Each shows an increase in probability as height increases with C. nigriceps being the steepest curce, then C. mimosae, then C. sjostedti. The data is from Palmer et al (2023).
+
+### j.
+
+```{r}
+#| label: problem-2j
+# new object
+pred_600 <- data.frame(
+  height_cm = 600, # setting predictor
+  scientific_name = unique(nests_clean$scientific_name)
+)
+# predicting the probabilities
+predict(
+  model2,
+  newdata = pred_600,
+  type = "response")
+```
+
+### k.
+
+At the height of 600 cm, the predicted probability of the C. mimosae species trees having a nest is 0.74, the C. sjostedti trees is 0.20, and the C. nigriceps is 1.00. This means that the thrid species trees have the highest probability and the second has the lowest. It seems that the C. sjostedti species causes trees to be less likely to have a nest in them and the C. nigriceps species is the most likely to have a nest in them. This can be explained by the defensive strategies of the different ant species which is also said in the paper. Different species have different more aggressive ways to defend their trees which would stop the birds from nesting there. We can see that the C. sjostedti species must be the most aggressive, having the least likely probability of having a nest.
+
+## Problem 3.
+
+### a.
+
+In one of my graphs in homework 2 I graphed the time of day versus the commute length but it had very few data points and did not have the same shape as my final visualization so the data appears differently. They all are very similar in what they are presenting, none of them show variables that significantly change the trends shown. I see similar patterns in the overall trends of the data, with highest times early in the morning and the later times being lower commute lengths. In week 9 I got feedback on how to show the weather on my affective visualization because I was not sure how to convey it. I got advice to make it look cloudy on the painting in the morning and in the evening and did that by creating a gradient in the sky on the final painting.
+
+### b.
+
+I want to use a linear regression to see the relationship between time of day and commute length. I could use this because I want to see if there is a linear relationship between leaving later in the day and a shorter drive. The variables are time of day which is a continous quantitative variable and commute length which is also a quantitative continuous variable.
+
+### c.
+
+Checking Assumptions:
+
+```{r}
+#| label: assumptions
+# reading in personal data
+personal_data <- read.csv("envs193ds-personal_data - Sheet1 copy.csv")
+
+# creating fit model
+data_model <- lm(
+  commute.length..min. ~ time.of.day..hr.min.,
+  data = personal_data
+)
+
+# running diagnostics
+par(mfrow = c(2, 2))
+plot(data_model)
+```
+
+Running Analysis
+
+```{r}
+#| label: analysis
+# running test summary for linear model
+summary(data_model)
+```
+
+Effect Size
+
+Out of the results from the analysis section I found the R^2^ value to be 0.5453 which means there is a positive correlation that is not very strong.
+
+### d.
+
+```{r}
+#| label: linear-model
+# base layer: ggplot
+ggplot(personal_data, 
+       # setting x and y components
+       mapping = aes(x = time.of.day..hr.min., y = commute.length..min.)) + 
+  # first layer: geom point
+  geom_point(color = "maroon", alpha = 0.7) + 
+  # second layer: line and ribbon
+  geom_smooth(method = "lm", # setting linear
+              color = "darkred",
+              fill = "pink") + 
+  # labeling axis
+  labs(x = "Time of day (min)", y = "Commute Length (min)", title = "Figure 1") + 
+  # retheming
+  theme_classic()
+```
+
+### e.
+
+In Figure 1 the relationship between time of day and commute length is shown in a linear regression model. There are maroon points representing the individual data points. The dark red line shows the linear model and the pink ribbon the 95% confidence interval. The plot shows that as time of day increases, the commute length decreases.
+
+### f.
+
+Commute length decreases as time of day increases (linear regression, 𝛽 = -0.0078 min/min of day. t = -4.77, p\<0.001). The later times of day were associated with shorter commutes. The model predicted that the decrease was about 0.47 minutes per hour of the day. The R^2^ value of 0.545 shows that there is a moderate connected between variables.
+
+### g.
+Shown in workshop 10.

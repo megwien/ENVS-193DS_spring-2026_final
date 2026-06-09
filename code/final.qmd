@@ -1,0 +1,52 @@
+---
+title: "final"
+format: pdf
+---
+
+
+```{r}
+#| label: packages
+library(tidyverse)
+```
+
+```{r}
+#| label: data-sets
+# creating new dataset
+nests <- read.csv("nest_data_final.csv")
+```
+
+## Problem 1
+
+### a.
+
+In part 1 the test they used a logistic regression test.
+
+In part 2 the test used was a Chi square test of independence.
+
+### b. 
+
+Part 1:
+American Avocet microhabitat use was not determined by the distance of the microhabitat from the water.
+
+Part 2:
+The American Avocet, Forster's Tern, and Black-necked Stilts all occupy different habitats within the managed pond, non-tidal marsh, salt pond, tidal marsh, or tidal mudflat study areas.
+
+### c.
+
+One other variable that could influence the birds' habitat use is how deep the water is in different microhabitats.
+This is a continuous quantitative variable that would be measured in meters. It could be measured with a meter stick at the different sites.
+This could effect the American Avocet habitat use because the depth of the water could determine what prey live in the habitat and the resources available to the birds.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

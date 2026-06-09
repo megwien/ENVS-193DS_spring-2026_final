@@ -8,12 +8,14 @@ format: pdf
 ```{r}
 #| label: packages
 library(tidyverse)
+library(DHARMa)
+library(ggeffects)
 ```
 
 ```{r}
 #| label: data-sets
 # creating new dataset
-nests <- read.csv("nest_data_final.csv")
+nests <- read.csv("../data/nest_data_final.csv")
 ```
 
 ## Problem 1
@@ -112,3 +114,126 @@ model2 <- glm(
 The better model is the interaction model with height times ant species  because it had a lower AIC.
 
 ### g.
+
+```{r}
+# simulate residuals from model2
+model2_res <- simulateResiduals(fittedModel = model2)
+
+# plotting the residuals
+plot(model2_res)
+
+# running diagnostic for uniformity
+testUniformity(model2_res)
+# running diagnostic for dispersing
+testDispersion(model2_res)
+# running diagnostic for outliers
+testOutliers(model2_res)
+```
+
+### h.
+
+```{r}
+#| label: problem-2h
+# creating predictions object from model 2
+predictions <- ggpredict(
+  model2,
+  terms = c("height_cm", "scientific_name")
+)
+# base layer: ggplot
+ggplot() +
+    # first layer: jitter
+  geom_jitter(
+    data = nests_clean,
+    aes(
+      x = height_cm,
+      y = case_control
+    ),
+    # setting customizations
+    width = 0,
+    height = 0,
+    color = "purple",
+    alpha = 0.4
+  ) +
+   # second layer: ribbon
+  geom_ribbon(
+    data = predictions,
+    aes(
+      x = x,
+      ymin = conf.low, # setting CI
+      ymax = conf.high
+    ),
+    fill = "blue",
+    alpha = 0.3
+  ) +
+    # third layer: line
+  geom_line(
+    data = predictions,
+    aes(
+      x = x,
+      y = predicted
+    ),
+    color = "red",
+    linewidth = 1.2
+  ) +
+  # seperating by ant species
+  facet_wrap(~group) +
+  # labeling x and y axis
+  labs(
+    x = "Tree height(cm)",
+    y = "Probability of nest occurrence"
+  ) +
+  # retheming
+  theme_classic() +
+    # removing legend
+  theme(
+    legend.position = "none"
+  )
+```
+
+
+### i.
+
+Predicted probabilty of a bird nest being in a tree depending on the height and species of acacia ant. Purple points represent the data points of whether or not there was a nest in the tree. Red line shows the predeicted probability at each tree height. The blue ribbon shows the 95% confidence interval. The first panel shows data for the C. mimosae species, the middle for the C. sjostedti species, and the third one for C. nigriceps. Each shows an increase in probability as height increases with C. nigriceps being the steepest curce, then C. mimosae, then C. sjostedti. The data is from Palmer et al (2023).
+
+### j.
+
+```{r}
+#| label: problem-2j
+# new object
+pred_600 <- data.frame(
+  height_cm = 600, # setting predictor
+  scientific_name = unique(nests_clean$scientific_name)
+)
+# predicting the probabilities
+predict(
+  model2,
+  newdata = pred_600,
+  type = "response")
+```
+
+
+### k.
+
+At the height of 600 cm, the predicted probability of the C. mimosae species trees having a nest is 0.74, the C. sjostedti trees is 0.20, and the C. nigriceps is 1.00. This means that the thrid species trees have the highest probability and the second has the lowest. It seems that the C. sjostedti species causes trees to be less likely to have a nest in them and the C. nigriceps species is the most likely to have a nest in them. This can be explained by the defensive strategies of the different ant species which is also said in the paper. Different species have different more aggressive ways to defend their trees which would stop the birds from nesting there. We can see that the C. sjostedti species must be the most aggressive, having the least likely probability of having a nest.
+
+
+## Problem 3. 
+
+### a. 
+
+In one of my graphs in homework 2 I graphed the time of day versus the commute length but it had very few data points and did not have the same shape as my final visualization so the data appears differently.
+They all are very similar in what they are presenting, none of them show variables that significantly change the trends shown. 
+I see similar patterns in the overall trends of the data, with highest times early in the morning and the later times being lower commute lengths.
+In week 9 I got feedback on how to show the weather on my affective visualization because I was not sure how to convey it. I got advice to make it look cloudy on the painting in the morning and in the evening and did that by creating a gradient in the sky on the final painting. 
+
+### b.
+
+
+
+
+
+
+
+
+
+

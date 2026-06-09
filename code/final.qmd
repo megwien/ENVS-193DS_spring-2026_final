@@ -268,8 +268,24 @@ Out of the results from the analysis section I found the R^2^ value to be 0.5453
 ```{r}
 #| label: linear-model
 # base layer: ggplot
+ggplot(personal_data, 
+       # setting x and y components
+       mapping = aes(x = time.of.day..hr.min., y = commute.length..min.)) + 
+  # first layer: geom point
+  geom_point(color = "maroon", alpha = 0.7) + 
+  # second layer: line and ribbon
+  geom_smooth(method = "lm", # setting linear
+              color = "darkred",
+              fill = "pink") + 
+  # labeling axis
+  labs(x = "Time of day (min)", y = "Commute Length (min)", title = "Figure 1") + 
+  # retheming
+  theme_classic()
 ```
 
+### e. 
+
+In Figure 1 the relationship between time of day and commute length is shown in a linear regression model. There are maroon points representing the individual data points. The dark red line shows the linear model and the pink ribbon the 95% confidence interval. The plot shows that as time of day increases, the commute length decreases.
 
 
 
